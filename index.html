@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celestial Vision</title>
+
+<style>
+/* ===================================================================
+   Celestial Vision — Space-themed stylesheet
+   Palette:
+     --void        #05060B  deep space background
+     --panel       rgba(15,18,38,.72)  glass panel base
+     --panel-edge  #23274d  panel border
+     --nebula      #7B6FE0  primary accent (violet)
+     --aurora      #45D6C4  secondary accent (teal)
+     --star        #F5D77A  tertiary accent (starlight gold)
+     --comet       #FF8B6B  quaternary accent (warm coral)
+     --ink         #F5F3FF  primary text
+     --ink-dim     #9092BD  secondary text
+   Type:
+     Display / headings — "Space Grotesk"
+     Body / inputs       — "Manrope"
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  --void: #05060B;
+  --panel: rgba(15, 18, 38, 0.72);
+  --panel-edge: #23274d;
+  --field-bg: rgba(5, 6, 15, 0.55);
+  --nebula: #7B6FE0;
+  --nebula-soft: rgba(123, 111, 224, 0.35);
+  --aurora: #45D6C4;
+  --star: #F5D77A;
+  --comet: #FF8B6B;
+  --ink: #F5F3FF;
+  --ink-dim: #9092BD;
+  --radius-panel: 22px;
+  --radius-field: 10px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--void);
+  color: var(--ink);
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+  padding: 72px 20px 90px;
+  display: flex;
+  justify-content: center;
+}
+
+/* -------------------------------------------------------------
+   Starfield — two layered depths, gentle twinkle
+   ------------------------------------------------------------- */
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+body::before {
+  background-image:
+    radial-gradient(1.6px 1.6px at 20px 30px, #fff 100%, transparent 0),
+    radial-gradient(1.2px 1.2px at 120px 90px, #fff 100%, transparent 0),
+    radial-gradient(1px 1px at 200px 40px, #cfd0f0 100%, transparent 0),
+    radial-gradient(1.4px 1.4px at 260px 160px, #fff 100%, transparent 0),
+    radial-gradient(1px 1px at 340px 60px, #cfd0f0 100%, transparent 0),
+    radial-gradient(1.6px 1.6px at 60px 180px, #fff 100%, transparent 0),
+    radial-gradient(1px 1px at 400px 220px, #fff 100%, transparent 0);
+  background-size: 440px 260px;
+  opacity: 0.9;
+  animation: twinkle 6s ease-in-out infinite;
+}
+
+body::after {
+  background-image:
+    radial-gradient(1px 1px at 40px 120px, #fff 100%, transparent 0),
+    radial-gradient(1.3px 1.3px at 160px 20px, #fff 100%, transparent 0),
+    radial-gradient(1px 1px at 260px 200px, #cfd0f0 100%, transparent 0),
+    radial-gradient(1.5px 1.5px at 320px 100px, #fff 100%, transparent 0),
+    radial-gradient(1px 1px at 380px 10px, #fff 100%, transparent 0);
+  background-size: 500px 320px;
+  opacity: 0.5;
+  animation: twinkle 9s ease-in-out infinite reverse;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.95; }
+}
+
+/* Shooting stars — two, offset timing */
+.shooting-star {
+  position: fixed;
+  z-index: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  pointer-events: none;
+}
+.shooting-star::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 110px;
+  height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), transparent);
+}
+.shooting-star--a { top: 12%; left: 78%; animation: shoot 7s linear infinite; animation-delay: 1.5s; }
+.shooting-star--b { top: 32%; left: 92%; animation: shoot 9s linear infinite; animation-delay: 4.5s; }
+
+@keyframes shoot {
+  0%   { transform: translate(0, 0) rotate(215deg); opacity: 0; }
+  4%   { opacity: 1; }
+  22%  { transform: translate(-520px, 380px) rotate(215deg); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* -------------------------------------------------------------
+   Orbit hero decoration
+   ------------------------------------------------------------- */
+
+.orbit-field {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  width: 560px;
+  height: 560px;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(123, 111, 224, 0.18);
+}
+
+.orbit-ring--outer { animation: spin 60s linear infinite; }
+.orbit-ring--inner {
+  inset: 70px;
+  border-color: rgba(69, 214, 196, 0.16);
+  animation: spin 40s linear infinite reverse;
+}
+
+.orbit-dot {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--star);
+  box-shadow: 0 0 12px 2px rgba(245, 215, 122, 0.8);
+  transform-origin: 0 210px;
+  animation: spin 60s linear infinite;
+}
+
+.orbit-dot--outer2 {
+  top: 210px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: var(--aurora);
+  box-shadow: 0 0 10px 2px rgba(69, 214, 196, 0.8);
+  transform-origin: 0 70px;
+  animation: spin 40s linear infinite reverse;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Drifting asteroid, gentle float */
+.asteroid {
+  position: absolute;
+  top: 130px;
+  left: 12%;
+  width: 10px;
+  height: 10px;
+  border-radius: 40% 60% 55% 45%;
+  background: linear-gradient(135deg, #3a3f73, #1c1f3d);
+  opacity: 0.7;
+  animation: drift 8s ease-in-out infinite;
+}
+.asteroid--b {
+  top: 340px;
+  left: 84%;
+  width: 7px;
+  height: 7px;
+  animation: drift 11s ease-in-out infinite reverse;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(40deg); }
+}
+
+/* Nebula glow behind the content */
+.container::before {
+  content: "";
+  position: absolute;
+  top: -180px;
+  left: 50%;
+  width: 900px;
+  height: 700px;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(circle at 30% 30%, var(--nebula-soft), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(69, 214, 196, 0.2), transparent 50%);
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------
+   Layout
+   ------------------------------------------------------------- */
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero {
+  margin-bottom: 44px;
+  animation: fadeUp 0.7s ease both;
+}
+
+.eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--aurora);
+  letter-spacing: 0.04em;
+  margin: 0 0 14px;
+}
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  background: linear-gradient(120deg, var(--ink) 25%, var(--nebula) 65%, var(--aurora) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 7s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.subtitle {
+  font-size: 1.02rem;
+  color: var(--ink-dim);
+  margin: 0 auto;
+  max-width: 480px;
+  font-weight: 500;
+}
+
+/* -------------------------------------------------------------
+   Form panel
+   ------------------------------------------------------------- */
+
+.form-box {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius-panel);
+  padding: 40px 36px 32px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 30px 60px -30px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  text-align: left;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.12s;
+}
+
+.field-group {
+  border: none;
+  padding: 0 0 26px;
+  margin: 0 0 26px;
+  border-bottom: 1px solid var(--panel-edge);
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.field-group:nth-of-type(1) { animation-delay: 0.28s; }
+.field-group:nth-of-type(2) { animation-delay: 0.4s; }
+.field-group:nth-of-type(3) { animation-delay: 0.52s; }
+
+.field-group:last-of-type {
+  padding-bottom: 0;
+  margin-bottom: 30px;
+  border-bottom: none;
+}
+
+.field-group legend {
+  padding: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.field-group__hint {
+  margin: 4px 0 16px;
+  font-size: 0.86rem;
+  color: var(--ink-dim);
+}
+
+.input-grid { display: grid; gap: 14px; }
+.input-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.input-grid--5 { grid-template-columns: repeat(5, 1fr); }
+
+.field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-dim);
+  margin-bottom: 6px;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 13px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--field-bg);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius-field);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.field input::placeholder { color: #565a86; font-weight: 500; }
+.field input:hover { border-color: #34386b; }
+
+.field input:focus {
+  border-color: var(--nebula);
+  background: rgba(123, 111, 224, 0.08);
+  box-shadow: 0 0 0 4px rgba(123, 111, 224, 0.18);
+  transform: translateY(-1px);
+}
+
+.field input[type="number"]::-webkit-outer-spin-button,
+.field input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+button[type="submit"] {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--void);
+  background: linear-gradient(120deg, var(--aurora), var(--nebula));
+  background-size: 180% 100%;
+  border: none;
+  border-radius: var(--radius-field);
+  cursor: pointer;
+  overflow: hidden;
+  animation: fadeUp 0.6s ease forwards, glow 3.5s ease-in-out infinite 1s;
+  opacity: 0;
+  animation-delay: 0.62s, 1s;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease, background-position 0.4s ease;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(123, 111, 224, 0); }
+  50% { box-shadow: 0 10px 28px -10px rgba(123, 111, 224, 0.55); }
+}
+
+button[type="submit"]:hover {
+  filter: brightness(1.08);
+  background-position: 100% 0;
+  box-shadow: 0 12px 30px -8px rgba(123, 111, 224, 0.6);
+  transform: translateY(-2px);
+}
+
+button[type="submit"]:active { transform: translateY(0) scale(0.98); }
+
+button[type="submit"]:focus-visible {
+  outline: 3px solid var(--star);
+  outline-offset: 3px;
+}
+
+/* -------------------------------------------------------------
+   Result panel — accent color depends on predicted class
+   ------------------------------------------------------------- */
+
+.result {
+  --accent: var(--star);
+  margin-top: 32px;
+  padding: 30px 28px;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius-panel);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 20px 50px -25px rgba(0, 0, 0, 0.75);
+  text-align: left;
+  animation: pop 0.6s cubic-bezier(.22, 1.4, .36, 1) both;
+}
+
+.result--star   { --accent: var(--star); }
+.result--galaxy { --accent: var(--nebula); }
+.result--qso    { --accent: var(--aurora); }
+
+@keyframes pop {
+  0%   { opacity: 0; transform: scale(0.86) translateY(14px); }
+  60%  { opacity: 1; transform: scale(1.03) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.result__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.result__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+  animation: badgePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
+  50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 14%, transparent); }
+}
+
+.result__eyebrow {
+  margin: 0 0 2px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink-dim);
+}
+
+.result h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--accent);
+}
+
+/* -------------------------------------------------------------
+   GK flashcard — click/tap to flip and reveal
+   ------------------------------------------------------------- */
+
+.flashcard {
+  margin-top: 6px;
+  min-height: 168px;
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+.flashcard__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 168px;
+  transition: transform 0.65s cubic-bezier(.4, .2, .2, 1);
+  transform-style: preserve-3d;
+}
+
+.flashcard.is-flipped .flashcard__inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 14px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.flashcard__face--front {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.flashcard__face--front .flashcard__icon {
+  font-size: 1.6rem;
+  animation: floatIcon 2.4s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.flashcard__face--front p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink-dim);
+}
+
+.flashcard__face--back {
+  transform: rotateY(180deg);
+  justify-content: center;
+  background: rgba(5, 6, 15, 0.5);
+}
+
+.flashcard__face--back b {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 0.92rem;
+}
+
+.flashcard__face--back p {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  color: var(--ink-dim);
+  line-height: 1.7;
+}
+
+.flashcard:focus-visible .flashcard__face {
+  outline: 3px solid var(--star);
+  outline-offset: 2px;
+}
+
+.footer-note {
+  margin-top: 40px;
+  font-size: 0.8rem;
+  color: #52558a;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.7s;
+}
+
+/* -------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .input-grid--5 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .form-box { padding: 30px 20px 24px; }
+  .input-grid--2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 400px) {
+  .input-grid--5 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* -------------------------------------------------------------
+   Accessibility
+   ------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after,
+  .orbit-ring, .orbit-dot, .orbit-dot--outer2,
+  .asteroid, .asteroid--b,
+  .shooting-star--a, .shooting-star--b,
+  .hero, .form-box, .field-group, .footer-note,
+  h1, button[type="submit"], .result, .result__badge,
+  .flashcard__face--front .flashcard__icon {
+    animation: none !important;
+  }
+  .field-group, button[type="submit"] { opacity: 1; }
+  button[type="submit"]:hover { transform: none; }
+  .flashcard__inner { transition: none; }
+}
+</style>
+</head>
+
+<body>
+
+    <div class="shooting-star shooting-star--a" aria-hidden="true"></div>
+    <div class="shooting-star shooting-star--b" aria-hidden="true"></div>
+
+    <div class="orbit-field" aria-hidden="true">
+        <span class="orbit-ring orbit-ring--outer"></span>
+        <span class="orbit-ring orbit-ring--inner"></span>
+        <span class="orbit-dot"></span>
+        <span class="orbit-dot orbit-dot--outer2"></span>
+        <span class="asteroid"></span>
+        <span class="asteroid asteroid--b"></span>
+    </div>
+
+    <div class="container">
+
+        <!-- Hero -->
+        <header class="hero">
+            <p class="eyebrow">Star · Galaxy Classifier</p>
+            <h1>🌌 Celestial Vision</h1>
+            <p class="subtitle">
+                Enter an object's sky position, photometric magnitudes and redshift,
+                and the model will classify it as a star, galaxy or quasar &mdash;
+                the same features astronomers pull from Sloan Digital Sky Survey imaging.
+            </p>
+        </header>
+
+        <!-- Prediction Form -->
+        <div class="form-box">
+
+            <form action="/predict" method="POST">
+
+                <fieldset class="field-group">
+                    <legend>Sky position</legend>
+                    <p class="field-group__hint">Equatorial coordinates, in degrees.</p>
+                    <div class="input-grid input-grid--2">
+                        <div class="field">
+                            <label for="alpha">Alpha (Right Ascension)</label>
+                            <input type="number" step="any" id="alpha" name="alpha" placeholder="e.g. 135.6891" required>
+                        </div>
+                        <div class="field">
+                            <label for="delta">Delta (Declination)</label>
+                            <input type="number" step="any" id="delta" name="delta" placeholder="e.g. 32.4941" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="field-group">
+                    <legend>Photometric magnitudes</legend>
+                    <p class="field-group__hint">Brightness measured through five filters, faintest to reddest.</p>
+                    <div class="input-grid input-grid--5">
+                        <div class="field">
+                            <label for="u">u</label>
+                            <input type="number" step="any" id="u" name="u" placeholder="ultraviolet" required>
+                        </div>
+                        <div class="field">
+                            <label for="g">g</label>
+                            <input type="number" step="any" id="g" name="g" placeholder="green" required>
+                        </div>
+                        <div class="field">
+                            <label for="r">r</label>
+                            <input type="number" step="any" id="r" name="r" placeholder="red" required>
+                        </div>
+                        <div class="field">
+                            <label for="i">i</label>
+                            <input type="number" step="any" id="i" name="i" placeholder="near-infrared" required>
+                        </div>
+                        <div class="field">
+                            <label for="z">z</label>
+                            <input type="number" step="any" id="z" name="z" placeholder="infrared" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="field-group">
+                    <legend>Observation details</legend>
+                    <p class="field-group__hint">Instrument reading and spectral shift.</p>
+                    <div class="input-grid input-grid--2">
+                        <div class="field">
+                            <label for="cam_col">Camera column</label>
+                            <input type="number" step="any" id="cam_col" name="cam_col" placeholder="1&ndash;6" required>
+                        </div>
+                        <div class="field">
+                            <label for="redshift">Redshift</label>
+                            <input type="number" step="any" id="redshift" name="redshift" placeholder="e.g. 0.0412" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Predict Button -->
+                <button type="submit">
+                    🔭 Predict object
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Prediction Result -->
+        {% if prediction %}
+
+        <div class="result result--{{ prediction | lower }}">
+
+            <div class="result__header">
+                <span class="result__badge">
+                    {% if prediction == "STAR" %}⭐{% elif prediction == "GALAXY" %}🌌{% elif prediction == "QSO" %}🔭{% endif %}
+                </span>
+                <div>
+                    <p class="result__eyebrow">Prediction</p>
+                    <h2>{{ prediction }}</h2>
+                </div>
+            </div>
+
+            <!-- Flip-to-reveal general knowledge flashcard -->
+            <div class="flashcard gk" tabindex="0" role="button" aria-label="Flip to reveal general knowledge">
+                <div class="flashcard__inner">
+
+                    <div class="flashcard__face flashcard__face--front">
+                        <span class="flashcard__icon">
+                            {% if prediction == "STAR" %}⭐{% elif prediction == "GALAXY" %}🔭{% endif %}
+                        </span>
+                        <p>Tap the card for a quick fact about {{ prediction | lower }}s</p>
+                    </div>
+
+                    <div class="flashcard__face flashcard__face--back">
+                        {% if prediction == "STAR" %}
+                        <b>General knowledge</b>
+                        <p>
+                            Stars are massive astronomical objects made mainly
+                            of hydrogen and helium. They produce light and heat
+                            through nuclear fusion in their cores.
+                        </p>
+                        {% elif prediction == "GALAXY" %}
+                        <b>General knowledge</b>
+                        <p>
+                            A galaxy is a huge collection of stars, gas, dust
+                            and dark matter held together by gravity. Our Solar
+                            System belongs to the Milky Way galaxy.
+                        </p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        {% endif %}
+
+        <p class="footer-note">Model trained on SDSS photometric &amp; spectroscopic features.</p>
+
+    </div>
+
+    <script>
+        document.querySelectorAll('.flashcard').forEach(function (card) {
+            card.addEventListener('click', function () {
+                card.classList.toggle('is-flipped');
+            });
+            card.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.classList.toggle('is-flipped');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
